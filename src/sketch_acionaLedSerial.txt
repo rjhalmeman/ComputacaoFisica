@@ -1,0 +1,29 @@
+int led1=13;
+int led2=8;
+void setup(){
+  //start serial connection
+  Serial.begin(9600);
+
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT); 
+
+}
+char tecla;
+void loop(){  
+  if (Serial.available()){
+    tecla = Serial.read();
+    if(tecla == 'a')
+    {
+      digitalWrite(led1, HIGH);
+      digitalWrite(led2, LOW);
+    }
+    else if (tecla=='v'){
+      digitalWrite(led2, HIGH);
+      digitalWrite(led1, LOW);
+    }
+    else {
+      digitalWrite(led2, LOW);
+      digitalWrite(led1, LOW);
+    }
+  }
+}
