@@ -106,7 +106,9 @@ public class Main {
         //buscar novamente e imprimir a lista de sensores
         listaDeSensores = daoSensor.list();
         for (Sensor s : listaDeSensores) {
-            System.out.println(s.getIdSensor() + " - " + s.getNomeSensor() + " - " + s.getLocalDoSensor());
+            System.out.println(s.getIdSensor()
+                    + " - " + s.getNomeSensor() + " - "
+                    + s.getLocalDoSensor());
         }
     }
 
