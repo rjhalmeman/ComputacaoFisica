@@ -27,10 +27,13 @@ public class AcessaArduino extends Observable implements SerialPortEventListener
         // Mac OS X
         "serial-A9007UX1",
         //linux
-        "/dev/tty/usb", "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyACM0", "/dev/ttyACM1",
-        "/dev/ttyACM2", "/dev/ttyACM3", "/dev/ttyACM4", "/dev/ttyACM5", "/dev/ttyACM6",
+        "/dev/tty/usb", "/dev/ttyUSB0", "/dev/ttyUSB1", 
+        "/dev/ttyUSB2", "/dev/ttyACM0", "/dev/ttyACM1",
+        "/dev/ttyACM2", "/dev/ttyACM3", "/dev/ttyACM4", 
+        "/dev/ttyACM5", "/dev/ttyACM6",
         // windows
-        "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "COM10", "COM11", "COM12", "COM13"
+        "COM3", "COM4", "COM5", "COM6", "COM7", 
+        "COM8", "COM9", "COM10", "COM11", "COM12", "COM13"
     };
     /**
      * Buffered input stream from the port
@@ -72,22 +75,24 @@ public class AcessaArduino extends Observable implements SerialPortEventListener
 
     private void initialize() {
         CommPortIdentifier portId = null;
-        Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
 
-        portEnum = CommPortIdentifier.getPortIdentifiers();
+       Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
+        System.out.println("port enum "+portEnum.nextElement());
         // iterate through, looking for the port
         while (portEnum.hasMoreElements()) {
             CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
             for (String portName : PORT_NAMES) {
+                System.out.println("nome da porta "+portName);
                 if (currPortId.getName().equals(portName)) {
                     portId = currPortId;
                     portaSelecionada = currPortId.getName();
-                    // System.out.println("Porta selecionada=>" + currPortId.getName());
+                    System.out.println("Porta selecionada=>" + currPortId.getName());
                     break;
                 }
             }
         }
 
+        
         if (portId == null) {
             System.out.println("Não encontrou a porta USB destinada ao Arduino");
             return;
