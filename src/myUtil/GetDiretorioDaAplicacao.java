@@ -1,4 +1,4 @@
-package codigoFonte;
+package myUtil;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;

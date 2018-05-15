@@ -1,4 +1,4 @@
-package tools;
+package myUtil;
 
 // @author Radames
 import java.sql.Connection;
@@ -27,7 +27,7 @@ public class DB_Direct_Connection {
     public DB_Direct_Connection(String caminho) {
         ManipulaArquivo arq = new ManipulaArquivo();
 
-     //   System.out.println("caminho " + caminho);
+        //   System.out.println("caminho " + caminho);
         List<String> bd = arq.abrirArquivo(caminho);
 
         //System.out.println("aaa " + bd.size());

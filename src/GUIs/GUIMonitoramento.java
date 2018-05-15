@@ -1,10 +1,16 @@
-package codigoFonte;
+package GUIs;
 
 /**
  *
  * @author radames
  */
 import Arduino.AcessaArduino;
+import DAOs.DAODadosSensor;
+import DAOs.DAOSensor;
+import Entidades.DadosSensor;
+import Entidades.DadosSensorPK;
+import Entidades.Sensor;
+
 import java.awt.BorderLayout;
 
 import java.awt.Color;
@@ -25,7 +31,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -33,9 +38,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
-import tools.DB_Direct;
+import myUtil.CentroDoMonitorMaior;
+import myUtil.ManipulaArquivo;
 
-public class GUI extends JFrame implements Observer {
+public class GUIMonitoramento extends JFrame implements Observer {
 
     Container cp;
 
@@ -74,16 +80,24 @@ public class GUI extends JFrame implements Observer {
     Locale ptBR = new Locale("pt", "BR");
     NumberFormat numberFormat = NumberFormat.getNumberInstance(ptBR); //para números
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss");
-    SimpleDateFormat dtf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    SimpleDateFormat dtf = new SimpleDateFormat("yyyy-MM-dd MM:mm:ss");
 
-    DB_Direct db = new DB_Direct("src/tools/local.txt");
+    DAODadosSensor daoDadosSensor = new DAODadosSensor();
+    DadosSensor dadosSensor = new DadosSensor();
+    DAOSensor daoSensor = new DAOSensor();
+    Sensor sensor = new Sensor();
 
     int max = 10;
 
     String ss = "";
     String sql = "";
 
-    public GUI() {
+    //posso executar com shift + F6 no netbeans
+    public static void main(String[] args) {
+        new GUIMonitoramento();
+    }
+
+    public GUIMonitoramento() {
         //buscar parâmetros salvos
         calib = manipulaArquivo.abrirArquivo("Calibragem.txt");
 
@@ -109,7 +123,7 @@ public class GUI extends JFrame implements Observer {
         //System.out.println(ArduinoSerialPortListener.serial_port);
         setSize(800, 400);
         setTitle("Monitoramento");
-        setLocation(new JanelaNoCentroDoMaiorMonitor(this).getCentroMonitorMaior());
+        setLocation(new CentroDoMonitorMaior().getCentroMonitorMaior(this));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         cp = getContentPane();
@@ -206,19 +220,19 @@ public class GUI extends JFrame implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        String aux = acessaArduino.getDadosArduino().trim();
+        String dadosFromArduino = acessaArduino.getDadosArduino().trim();
 
         //lbSensorTensaoOriginal.setText(aux);
         double vc;
-        if (!aux.equals("")) {
-            String[] s = aux.split("\\|");
-            for (int i = 0; i < s.length; i++) {
-                aux = s[i];
-                String[] a = aux.split(";");
-                int sensor = Integer.valueOf(a[0].trim());
+        if (!dadosFromArduino.equals("")) {
+            String[] strSensores = dadosFromArduino.split("\\|");//todos os sensores
+            for (int i = 0; i < strSensores.length; i++) {
+                dadosFromArduino = strSensores[i];
+                String[] a = dadosFromArduino.split(";");
+                int idSensorFromArduino = Integer.valueOf(a[0].trim());
                 // System.out.println("sensor "+ sensor+ " valor "+a[1].trim());
                 double v;
-                switch (sensor) {
+                switch (idSensorFromArduino) {
                     case 1:
                         lbSensorCorrenteOriginal.setText(a[1]);
                         try {
@@ -243,11 +257,21 @@ public class GUI extends JFrame implements Observer {
                         ss = "'" + dtf.format(new Date()) + "',"
                                 + "1,"
                                 + "'" + String.valueOf(numberFormat.format(vc)) + "'";
-                        sql = "INSERT INTO `sistemasensores`.`coleta_dados` "
-                                + "(`datahora_coleta_dados`, `sensor_id_sensor`, `dado_coleta_dados`) "
-                                + " VALUES (" + ss + ");";
-                        //System.out.println("sql " + sql);
-                        db.executaAtualizacaoNoBD(sql);
+                        //    System.out.println("aa "+ss);
+                        sensor = daoSensor.obter(idSensorFromArduino);
+                        if (sensor != null) {
+                            DadosSensorPK sensorPK = new DadosSensorPK();
+                            sensorPK.setIdDadosSensor(idSensorFromArduino);
+                            sensorPK.setDataHoraColeta(new Date());
+                            dadosSensor = new DadosSensor();
+                            dadosSensor.setSensorIdSensor(sensor);
+                            dadosSensor.setDadosSensorPK(sensorPK);
+                            dadosSensor.setDado(String.valueOf(vc));
+                            daoDadosSensor.inserir(dadosSensor);
+                        } else {
+                            System.out.println("nao achou o sensor");
+                            return;
+                        }
                         break;
                     case 2:
                         lbSensorTensaoOriginal.setText(a[1]);
@@ -276,7 +300,21 @@ public class GUI extends JFrame implements Observer {
                                 + "(`datahora_coleta_dados`, `sensor_id_sensor`, `dado_coleta_dados`) "
                                 + " VALUES (" + ss + ");";
                         //System.out.println("sql " + sql);
-                        db.executaAtualizacaoNoBD(sql);
+                        //System.out.println("bb "+ss);
+                        sensor = daoSensor.obter(idSensorFromArduino);
+                        if (sensor != null) {
+                            DadosSensorPK sensorPK = new DadosSensorPK();
+                            sensorPK.setIdDadosSensor(idSensorFromArduino);
+                            sensorPK.setDataHoraColeta(new Date());
+                            dadosSensor = new DadosSensor();
+                            dadosSensor.setSensorIdSensor(sensor);
+                            dadosSensor.setDadosSensorPK(sensorPK);
+                            dadosSensor.setDado(String.valueOf(vc));
+                            daoDadosSensor.inserir(dadosSensor);
+                        } else {
+                            System.out.println("nao achou o sensor");
+                            return;
+                        }
                         break;
 
                     default:

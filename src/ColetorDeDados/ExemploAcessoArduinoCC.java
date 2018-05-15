@@ -1,4 +1,4 @@
-package codigoFonte;
+package ColetorDeDados;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -59,8 +59,6 @@ public class ExemploAcessoArduinoCC implements SerialPortEventListener {
             // open the streams
             input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
             output = serialPort.getOutputStream();
-
-            
 
             // add event listeners
             serialPort.addEventListener(this);

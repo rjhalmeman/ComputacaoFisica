@@ -1,4 +1,4 @@
-package tools;
+package myUtil;
 
 // @author Radames
 import java.io.BufferedReader;

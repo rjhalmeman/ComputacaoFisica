@@ -140,14 +140,14 @@ public class AcessaArduino extends Observable implements SerialPortEventListener
             System.err.println(e.toString());
         }
     }
-  
+
     @Override
     public synchronized void serialEvent(SerialPortEvent oEvent) {
         if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             try {
                 String inputLine = input.readLine();
                 tempString = inputLine;
-               // System.out.println("tempString "+tempString);
+                // System.out.println("tempString "+tempString);
                 notifyObservers(tempString);
                 setChanged();
             } catch (Exception e) {
